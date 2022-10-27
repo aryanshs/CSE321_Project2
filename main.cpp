@@ -14,18 +14,25 @@
     References:
 */
 
+//PB 3 is button led output, and PB 5 is passcode led output
+//PB 8,9,10 and PB4 are keyad output pins, in order- with PB4 being the last
+//PC 8,9,10,11 are input pins for keypad in order from 4-3-2-1
+
+
 //Includes Section/Imports:
 #include "PinNamesTypes.h"
 #include "mbed.h"
 #include <cstdint>
 #include <stdio.h>
 #include <string.h>
+//#include "lcd_1602.h"
+//#include "lcd_1602.cpp"
 
 /*Global Variables Section :
 */
 int increment = 0; //increment to check the length of code
 char code[5] ="";
-char RightCode[5] = "A321";
+char RightCode[5] = "A521";
 //setting/declaring the interrupts:
 InterruptIn Key8(PC_8, PullDown); 
 InterruptIn Key9(PC_9, PullDown);
@@ -73,7 +80,6 @@ int main(){
     //user Port B for output ->rows
     //use Port C for input ->columns
     RCC->AHB2ENR |= 0x6;
-
     //4 outs and 4 ins pins
     // pin 16-23, (8-11)
     //PC 8,9,10,11
@@ -155,7 +161,7 @@ int main(){
 //takes care of the first column
 void KeyHandler8(void){
     
-    wait_us(300000);
+    wait_us(350000);
     if ((GPIOB->ODR&0X100)==0X100){
         strncat(code, "1", 1);
         increment = increment +1;
@@ -186,7 +192,7 @@ void KeyHandler8(void){
 //takes care of the second column
 void KeyHandler9(void){
         
-    wait_us(300000);
+    wait_us(350000);
     if ((GPIOB->ODR&0X100)==0X100){
         strncat(code, "2", 1);
         increment = increment +1;
@@ -216,7 +222,7 @@ void KeyHandler9(void){
 //takes care of the third column
 void KeyHandler10(void){
     
-    wait_us(300000);
+    wait_us(350000);
     if ((GPIOB->ODR&0X100)==0X100){
         strncat(code, "3", 1);
         increment = increment +1;
@@ -247,7 +253,7 @@ void KeyHandler10(void){
 //takes care of the fourth column
 void KeyHandler11(void){
 
-    wait_us(300000);
+    wait_us(350000);
     if ((GPIOB->ODR&0X100)==0X100){
         strncat(code, "A", 1);
         increment = increment +1;
@@ -303,7 +309,4 @@ void check(int inc){
         }
         
     }
-    //printf("%d", inc);
-  
-    // printf(val);
 }
