@@ -20,19 +20,21 @@
 
 
 //Includes Section/Imports:
-#include "PinNamesTypes.h"
+// #include "PinNamesTypes.h"
+#include "PinNames.h"
 #include "mbed.h"
 #include <cstdint>
+#include <cstdio>
 #include <stdio.h>
 #include <string.h>
-//#include "lcd_1602.h"
+#include "lcd_1602.h"
 //#include "lcd_1602.cpp"
 
 /*Global Variables Section :
 */
 int increment = 0; //increment to check the length of code
 char code[5] ="";
-char RightCode[5] = "A521";
+char RightCode[5] = "8579";
 //setting/declaring the interrupts:
 InterruptIn Key8(PC_8, PullDown); 
 InterruptIn Key9(PC_9, PullDown);
@@ -59,7 +61,9 @@ int32_t outputPB3_zeroes = 0x80;
 
 int32_t input_pin = 0xFF0000; //PC 8,9,10,11 input keypad
 
-
+//LCD
+CSE321_LCD lcd(16, 2, LCD_5x8DOTS, PF_15, PF_14); //scl is on top, sda on bottom
+bool locked = true;
 
 //Declare ISR:
 void KeyHandler8(void);
@@ -72,6 +76,7 @@ void newHandler(void);
 
 //checking code
 void check(int inc);
+void lightlcd(bool lock);
 
 int retval(int val);
 
@@ -80,6 +85,9 @@ int main(){
     //user Port B for output ->rows
     //use Port C for input ->columns
     RCC->AHB2ENR |= 0x6;
+    //RCC->AHB2ENR |= 0x20; //bus for port f lcd
+    //CSE321_LCD.begin();
+
     //4 outs and 4 ins pins
     // pin 16-23, (8-11)
     //PC 8,9,10,11
@@ -101,6 +109,11 @@ int main(){
     GPIOB->MODER |= 0x400;
     GPIOB->MODER &= ~(0x800);
 
+    //lcd
+    // GPIOF->MODER |= 0x50000000;
+    // GPIOF->MODER |= ~(0xA0000000);
+
+
     //calling keyhandler during internupt
     Key8.rise(&KeyHandler8);
     Key9.rise(&KeyHandler9);
@@ -115,8 +128,23 @@ int main(){
 
     //Turning the output on
     //GPIOB->ODR |= 0xF00;
-
+    //LCD
     
+    lcd.begin();
+    // lightlcd(locked);
+    // if (locked){
+    //     lcd.print("LOCKED");
+    // }else{
+    //     lcd.clear();
+    //     lcd.print("UNLOCKED");
+    // }
+    lcd.print("LOCKED");
+    //wait_ns(3000000);
+    // wait_ns(3000);
+    // lcd.clear();
+    // lcd.print("Wrong Code");
+    //wait_ns(3000);
+    //lcd.print("jdfkfjdkfj");
     
     while (1){
         //row1
@@ -161,30 +189,35 @@ int main(){
 //takes care of the first column
 void KeyHandler8(void){
     
-    wait_us(350000);
+    wait_us(700000);
     if ((GPIOB->ODR&0X100)==0X100){
+        //lcd.print("work");
         strncat(code, "1", 1);
         increment = increment +1;
         newHandler();
         check(increment);
+        wait_us(4000);
     }
     else if ((GPIOB->ODR&0X200)==0X200){
         strncat(code, "4", 1);
         increment = increment +1;
         newHandler();
         check(increment);
+        wait_us(4000);
     }
     else if ((GPIOB->ODR&0X400)==0X400){
         strncat(code, "7", 1);
         increment = increment +1;
         newHandler();
         check(increment);
+        wait_us(4000);
     }
     else if ((GPIOB->ODR&0X10)==0X10){
         strncat(code, "*", 1);
         increment = increment +1;
         newHandler();
         check(increment);
+        wait_us(4000);
     }
     
 }
@@ -192,60 +225,68 @@ void KeyHandler8(void){
 //takes care of the second column
 void KeyHandler9(void){
         
-    wait_us(350000);
+    wait_us(700000);
     if ((GPIOB->ODR&0X100)==0X100){
         strncat(code, "2", 1);
         increment = increment +1;
         newHandler();
         check(increment);
+        wait_us(4000);
     }
     else if ((GPIOB->ODR&0X200)==0X200){
         strncat(code, "5", 1);
         increment = increment +1;
         newHandler();
         check(increment);
+        wait_us(4000);
     }
     else if ((GPIOB->ODR&0X400)==0X400){
         strncat(code, "8", 1);
         increment = increment +1;
         newHandler();
         check(increment);
+        wait_us(4000);
     }
     else if ((GPIOB->ODR&0X10)==0X10){
         strncat(code, "0", 1);
         increment = increment +1;
         newHandler();
         check(increment);
+        wait_us(4000);
     }
 }
 
 //takes care of the third column
 void KeyHandler10(void){
     
-    wait_us(350000);
+    wait_us(700000);
     if ((GPIOB->ODR&0X100)==0X100){
         strncat(code, "3", 1);
         increment = increment +1;
         newHandler();
         check(increment);
+        wait_us(4000);
     }
     else if ((GPIOB->ODR&0X200)==0X200){
         strncat(code, "6", 1);
         increment = increment +1;
         newHandler();
         check(increment);
+        wait_us(4000);
     }
     else if ((GPIOB->ODR&0X400)==0X400){
         strncat(code, "9", 1);
         increment = increment +1;
         newHandler();
         check(increment);
+        wait_us(4000);
     }
     else if ((GPIOB->ODR&0X10)==0X10){
         strncat(code, "#", 1);
         increment = increment +1;
         newHandler();
         check(increment);
+        wait_us(4000);
     }
 
 }
@@ -253,30 +294,34 @@ void KeyHandler10(void){
 //takes care of the fourth column
 void KeyHandler11(void){
 
-    wait_us(350000);
+    wait_us(700000);
     if ((GPIOB->ODR&0X100)==0X100){
         strncat(code, "A", 1);
         increment = increment +1;
         newHandler();
         check(increment);
+        wait_us(4000);
     }
     else if ((GPIOB->ODR&0X200)==0X200){
         strncat(code, "B", 1);
         increment = increment +1;
         newHandler();
         check(increment);
+        wait_us(4000);
     }
     else if ((GPIOB->ODR&0X400)==0X400){
         strncat(code, "C", 1);
         increment = increment +1;
         newHandler();
         check(increment);
+        wait_us(4000);
     }
     else if ((GPIOB->ODR&0X10)==0X10){
         strncat(code, "D", 1);
         increment = increment +1;
         newHandler();
         check(increment);
+        wait_us(4000);
     }
 
 
@@ -288,6 +333,7 @@ void newHandler(void){
     wait_us(50000);
     GPIOB->ODR &= ~(0x8);
 }
+
 void check(int inc){
     
     bool right = true;
@@ -303,10 +349,41 @@ void check(int inc){
 
         if (right == true){
             GPIOB->ODR |= 0x20;
+            lcd.clear();
+            lcd.print("UNLOCKED");
+            //lightlcd(1);
+            // locked =false;
+            lightlcd(false);
         }
         else{
-            printf("Wrong Code");
+            printf("wrong code\n");
+            printf("%s", code);
+            //wait_us(300000);
+            //lcd.clear();   
+            lcd.print("Wrong");
+            //wait_us(3000000000);
+            //ightlcd(0);
         }
         
     }
+}
+
+void lightlcd(bool lock){
+    
+    if (lock){
+        //lcd.clear();
+        lcd.print("LOCKED");
+        //wait_us(3000);
+        //lcd.noDisplay();
+    }
+    else{
+        printf("GGGGGG RIGHT CODE");
+        //lcd.noDisplay();
+        lcd.clear();
+        // //lcd.begin();
+        lcd.print("UNLOCKED");
+        // wait_us(30000);
+    }
+    
+
 }
