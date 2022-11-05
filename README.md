@@ -49,10 +49,10 @@ The implementation and the code is thie above mentioned file
   - Imports:
     - 'mbed.h'
     - 'PinNames.h'
-    - <cstdint>
-    - <cstdio>
-    - <stdio.h>
-    - <string.h>
+    - cstdint
+    - cstdio
+    - stdio.h
+    - string.h
     - "lcd_1602.h"
     
   - Variables:
