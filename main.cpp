@@ -28,26 +28,27 @@
 #include <stdio.h>
 #include <string.h>
 #include "lcd_1602.h"
-//#include "lcd_1602.cpp"
 
 /*Global Variables Section :
 */
-int increment = 0; //increment to check the length of code
-char code[5] ="";
+
+//increment to check the length of code/digits
+int increment = 0; 
+
+//stores the code entered by the user
+char code[5] ="";  
+
+//stores the right code
 char RightCode[5] = "8579";
+
 //setting/declaring the interrupts:
 InterruptIn Key8(PC_8, PullDown); 
 InterruptIn Key9(PC_9, PullDown);
 InterruptIn Key10(PC_10, PullDown);
 InterruptIn Key11(PC_11, PullDown);
 
-// InterruptIn Key8(PB_8, PullDown); 
-// InterruptIn Key9(PB_9, PullDown);
-// InterruptIn Key10(PB_10, PullDown);
-// InterruptIn Key11(PB_11, PullDown);
 
 //Declaring variables for ports and pins
-//int32_t output_zero = 0xAA0000;
 int32_t output_zero = 0x2A0000; //PB 8,9,10 output keypad
 int32_t output_one = 0x150000; // PB 8,9,10 output keypad
 
@@ -63,7 +64,7 @@ int32_t input_pin = 0xFF0000; //PC 8,9,10,11 input keypad
 
 //LCD
 CSE321_LCD lcd(16, 2, LCD_5x8DOTS, PF_15, PF_14); //scl is on top, sda on bottom
-bool locked = true;
+bool locked = true; //if locked is true the lcd will display "locked"
 
 //Declare ISR:
 void KeyHandler8(void);
@@ -71,14 +72,15 @@ void KeyHandler9(void);
 void KeyHandler10(void);
 void KeyHandler11(void);
 
-//led
+//Function that handles the configuration of toggling led on and off at the press of a button on the keypad
 void newHandler(void);
 
-//checking code
+//Function that checks if the code entered is right or wrong
 void check(int inc);
+
+//Function that handles what to display on the LCD
 void lightlcd(bool lock);
 
-int retval(int val);
 
 //Main Function Section:
 int main(){
@@ -109,10 +111,6 @@ int main(){
     GPIOB->MODER |= 0x400;
     GPIOB->MODER &= ~(0x800);
 
-    //lcd
-    // GPIOF->MODER |= 0x50000000;
-    // GPIOF->MODER |= ~(0xA0000000);
-
 
     //calling keyhandler during internupt
     Key8.rise(&KeyHandler8);
@@ -126,25 +124,11 @@ int main(){
     Key10.enable_irq();
     Key11.enable_irq();
 
-    //Turning the output on
-    //GPIOB->ODR |= 0xF00;
+
     //LCD
-    
     lcd.begin();
-    // lightlcd(locked);
-    // if (locked){
-    //     lcd.print("LOCKED");
-    // }else{
-    //     lcd.clear();
-    //     lcd.print("UNLOCKED");
-    // }
-    lcd.print("LOCKED");
-    //wait_ns(3000000);
-    // wait_ns(3000);
-    // lcd.clear();
-    // lcd.print("Wrong Code");
-    //wait_ns(3000);
-    //lcd.print("jdfkfjdkfj");
+    lightlcd(locked);
+
     
     while (1){
         //row1
@@ -153,8 +137,6 @@ int main(){
         
         GPIOB->ODR &= ~(0x100);
         //wait_us(200);
-
-        
 
         //row2
         GPIOB->ODR |= 0x200;
@@ -173,11 +155,6 @@ int main(){
         wait_us(300);
         GPIOB->ODR &= ~(0x10);
         //wait_us(200);
-
-        //printf("%s", code);
-
-        //checking the right code
-        //check(increment);
     }
 
      
@@ -189,33 +166,33 @@ int main(){
 //takes care of the first column
 void KeyHandler8(void){
     
-    wait_us(700000);
+    wait_us(900000);
     if ((GPIOB->ODR&0X100)==0X100){
         //lcd.print("work");
         strncat(code, "1", 1);
-        increment = increment +1;
-        newHandler();
+        increment = increment +1; //increments the variable increment to count the number of digits entered
+        newHandler();  //toggles the led on and off at the press of the button
         check(increment);
         wait_us(4000);
     }
     else if ((GPIOB->ODR&0X200)==0X200){
         strncat(code, "4", 1);
         increment = increment +1;
-        newHandler();
+        newHandler();   //toggles the led on and off at the press of the button
         check(increment);
         wait_us(4000);
     }
     else if ((GPIOB->ODR&0X400)==0X400){
         strncat(code, "7", 1);
         increment = increment +1;
-        newHandler();
+        newHandler();   //toggles the led on and off at the press of the button
         check(increment);
         wait_us(4000);
     }
     else if ((GPIOB->ODR&0X10)==0X10){
         strncat(code, "*", 1);
         increment = increment +1;
-        newHandler();
+        newHandler();   //toggles the led on and off at the press of the button
         check(increment);
         wait_us(4000);
     }
@@ -225,32 +202,32 @@ void KeyHandler8(void){
 //takes care of the second column
 void KeyHandler9(void){
         
-    wait_us(700000);
+    wait_us(900000);
     if ((GPIOB->ODR&0X100)==0X100){
         strncat(code, "2", 1);
         increment = increment +1;
-        newHandler();
+        newHandler();   //toggles the led on and off at the press of the button
         check(increment);
         wait_us(4000);
     }
     else if ((GPIOB->ODR&0X200)==0X200){
         strncat(code, "5", 1);
         increment = increment +1;
-        newHandler();
+        newHandler();   //toggles the led on and off at the press of the button
         check(increment);
         wait_us(4000);
     }
     else if ((GPIOB->ODR&0X400)==0X400){
         strncat(code, "8", 1);
         increment = increment +1;
-        newHandler();
+        newHandler();   //toggles the led on and off at the press of the button
         check(increment);
         wait_us(4000);
     }
     else if ((GPIOB->ODR&0X10)==0X10){
         strncat(code, "0", 1);
-        increment = increment +1;
-        newHandler();
+        increment = increment +1;   
+        newHandler();   //toggles the led on and off at the press of the button
         check(increment);
         wait_us(4000);
     }
@@ -259,32 +236,32 @@ void KeyHandler9(void){
 //takes care of the third column
 void KeyHandler10(void){
     
-    wait_us(700000);
+    wait_us(900000);
     if ((GPIOB->ODR&0X100)==0X100){
         strncat(code, "3", 1);
         increment = increment +1;
-        newHandler();
+        newHandler();   //toggles the led on and off at the press of the button
         check(increment);
         wait_us(4000);
     }
     else if ((GPIOB->ODR&0X200)==0X200){
         strncat(code, "6", 1);
         increment = increment +1;
-        newHandler();
+        newHandler();   //toggles the led on and off at the press of the button
         check(increment);
         wait_us(4000);
     }
     else if ((GPIOB->ODR&0X400)==0X400){
         strncat(code, "9", 1);
         increment = increment +1;
-        newHandler();
+        newHandler();   //toggles the led on and off at the press of the button
         check(increment);
         wait_us(4000);
     }
     else if ((GPIOB->ODR&0X10)==0X10){
         strncat(code, "#", 1);
         increment = increment +1;
-        newHandler();
+        newHandler();   //toggles the led on and off at the press of the button
         check(increment);
         wait_us(4000);
     }
@@ -294,32 +271,32 @@ void KeyHandler10(void){
 //takes care of the fourth column
 void KeyHandler11(void){
 
-    wait_us(700000);
+    wait_us(900000);
     if ((GPIOB->ODR&0X100)==0X100){
         strncat(code, "A", 1);
         increment = increment +1;
-        newHandler();
+        newHandler();   //toggles the led on and off at the press of the button
         check(increment);
         wait_us(4000);
     }
     else if ((GPIOB->ODR&0X200)==0X200){
         strncat(code, "B", 1);
         increment = increment +1;
-        newHandler();
+        newHandler();   //toggles the led on and off at the press of the button
         check(increment);
         wait_us(4000);
     }
     else if ((GPIOB->ODR&0X400)==0X400){
         strncat(code, "C", 1);
         increment = increment +1;
-        newHandler();
+        newHandler();   //toggles the led on and off at the press of the button
         check(increment);
         wait_us(4000);
     }
     else if ((GPIOB->ODR&0X10)==0X10){
         strncat(code, "D", 1);
         increment = increment +1;
-        newHandler();
+        newHandler();   //toggles the led on and off at the press of the button
         check(increment);
         wait_us(4000);
     }
@@ -327,18 +304,19 @@ void KeyHandler11(void){
 
 }
 
-//toggle led on and off
+//toggle led on and off at the press of the button on the keypad
 void newHandler(void){
     GPIOB->ODR |= 0x8;
     wait_us(50000);
     GPIOB->ODR &= ~(0x8);
 }
 
+//Function that checks if the code entered is right or wrong
 void check(int inc){
     
-    bool right = true;
+    bool right = true; //if the code entered is wrong the boolean right will be set to false and the system won't be unclocked
 
-    if (inc ==4){
+    if (inc ==4){ //checking if the digit entered matches 4 
         
         for (int i = 0; i<inc; i++){
             
@@ -349,40 +327,31 @@ void check(int inc){
 
         if (right == true){
             GPIOB->ODR |= 0x20;
-            lcd.clear();
-            lcd.print("UNLOCKED");
-            //lightlcd(1);
-            // locked =false;
             lightlcd(false);
         }
         else{
             printf("wrong code\n");
-            printf("%s", code);
-            //wait_us(300000);
-            //lcd.clear();   
-            lcd.print("Wrong");
-            //wait_us(3000000000);
-            //ightlcd(0);
+            printf("%s\n", code);
+            lightlcd(false);
         }
         
     }
 }
 
+//Function that handles what to display on the LCD
 void lightlcd(bool lock){
     
     if (lock){
         //lcd.clear();
         lcd.print("LOCKED");
-        //wait_us(3000);
-        //lcd.noDisplay();
+       
     }
     else{
-        printf("GGGGGG RIGHT CODE");
-        //lcd.noDisplay();
+        increment=0;
         lcd.clear();
-        // //lcd.begin();
         lcd.print("UNLOCKED");
-        // wait_us(30000);
+        wait_us(30000);
+        printf("UNLOCKED\n");
     }
     
 
