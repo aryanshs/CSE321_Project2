@@ -49,22 +49,34 @@ The implementation and the code is thie above mentioned file
   - Imports:
     - 'mbed.h'
     - 'PinNames.h'
-    <cstdint>
-    <cstdio>
-    <stdio.h>
-    <string.h>
-    "lcd_1602.h"
+    - <cstdint>
+    - <cstdio>
+    - <stdio.h>
+    - <string.h>
+    - "lcd_1602.h"
     
   - Variables:
-   int increment
-   char code
-   char RightCode
-   int32_t output_zero
-   int32_t output_one
-   
+    - int increment
+    - char code
+    - char RightCode
+    - int32_t output_zero
+    - int32_t output_one
+    - int32_t outputPB4_ones
+    - int32_t outputPB4_zeroes
+    - int32_t outputPB3_ones 
+    - int32_t outputPB3_zeroes
+    - int32_t input_pin
+    - bool locked
+    - lcd (inherited from CSE321_LCD)
     
   - Functions:
-    
+    - KeyHandler8
+    - KeyHandler9
+    - KeyHandler10
+    - KeyHandler11
+    - newHandler
+    - check
+    - lightlcd
 
 ----------
 - **API and Built In Elements Used**
