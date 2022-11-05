@@ -41,7 +41,7 @@ system. The LCD will lock/unlock based on if you enter the right code/password
 --------------------
 ## CSE321_project2_aryanshs_main.cpp:
 --------------------
-The implementation and the code is thie above mentioned file
+The implementation and the code is in the above mentioned file
 
 ----------
 - **Things Declared**
