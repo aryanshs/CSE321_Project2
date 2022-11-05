@@ -12,6 +12,7 @@
     Outputs : LCD, LED
 
     References:
+    https://www.st.com/resource/en/reference_manual/dm00310109-stm32l4-series-advanced-armbased-32bit-mcus-stmicroelectronics.pdf
 */
 
 //PB 3 is button led output, and PB 5 is passcode led output
