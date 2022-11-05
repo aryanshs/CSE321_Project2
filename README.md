@@ -47,8 +47,8 @@ The implementation and the code is thie above mentioned file
 - **Things Declared**
 ----------
   - Imports:
-    'mbed.h'
-    'PinNames.h'
+    - 'mbed.h'
+    - 'PinNames.h'
     <cstdint>
     <cstdio>
     <stdio.h>
